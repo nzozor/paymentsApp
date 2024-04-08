@@ -1,3 +1,29 @@
+<div class="filters">
+      <div>
+        <mat-form-field>
+          <mat-hint></mat-hint>
+          <mat-label>select status filter</mat-label>
+          <mat-select (selectionChange)="applyStatusFilter($event)">
+            <mat-option [value]="enum.value"  *ngFor="let enum of StatusFilter | keyvalue"> {{ enum.key}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <div>
+        <mat-form-field>
+          <mat-label>Select a date range</mat-label>
+          <mat-date-range-input [rangePicker]="picker">
+            <input matStartDate placeholder="Start date" #dateRangeStart (dateChange)="applyDateFilter(dateRangeStart.value, dateRangeEnd.value)">
+            <input matEndDate placeholder="End date" #dateRangeEnd (dateChange)="applyDateFilter(dateRangeStart.value, dateRangeEnd.value)">
+          </mat-date-range-input>
+          <mat-hint>MM/DD/YYYY – MM/DD/YYYY</mat-hint>
+          <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-date-range-picker #picker ></mat-date-range-picker>
+        </mat-form-field>
+        <button mat-button (click)="applyDateFilter('', '')">Clear</button>
+      </div>
+</div>
 <div class="mat-elevation-z8">
   <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
     <!-- ID Column -->
@@ -39,11 +65,8 @@
     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
     <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
   </table>
-
-<!--  <mat-paginator [pageSizeOptions]="[5]" showFirstLastButtons></mat-paginator>-->
-
+  <mat-progress-bar mode="indeterminate" *ngIf="isLoading"></mat-progress-bar>
   <mat-paginator
-		#paginator
     [length]="metaData.totalNumberOfItems"
     [pageSizeOptions]="[metaData.pageSize]"
     showFirstLastButtons
