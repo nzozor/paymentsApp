@@ -1,30 +1,31 @@
 <div class="filters">
-      <div>
-        <mat-form-field>
-          <mat-hint></mat-hint>
-          <mat-label>select status filter</mat-label>
-          <mat-select (selectionChange)="applyStatusFilter($event)">
-            <mat-option [value]="enum.value"  *ngFor="let enum of StatusFilter | keyvalue"> {{ enum.key}}
-            </mat-option>
-          </mat-select>
-        </mat-form-field>
-      </div>
-
-      <div>
-        <mat-form-field>
-          <mat-label>Select a date range</mat-label>
-          <mat-date-range-input [rangePicker]="picker">
-            <input matStartDate placeholder="Start date" #dateRangeStart (dateChange)="applyDateFilter(dateRangeStart.value, dateRangeEnd.value)">
-            <input matEndDate placeholder="End date" #dateRangeEnd (dateChange)="applyDateFilter(dateRangeStart.value, dateRangeEnd.value)">
-          </mat-date-range-input>
-          <mat-hint>MM/DD/YYYY – MM/DD/YYYY</mat-hint>
-          <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
-          <mat-date-range-picker #picker ></mat-date-range-picker>
-        </mat-form-field>
-        <button mat-button (click)="applyDateFilter('', '')">Clear</button>
-      </div>
+  <div>
+    <mat-form-field>
+      <mat-hint></mat-hint>
+      <mat-label>select status filter</mat-label>
+      <mat-select (selectionChange)="applyStatusFilter($event)" [(ngModel)]="statusSelectInput" >
+        @for (filter of statusFilterEnum | keyvalue; track filter.value) {
+        <mat-option [value]="filter.value"> {{ filter.key }} </mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+  </div>
+  <div>
+    <mat-form-field>
+      <mat-label>Select a date range</mat-label>
+      <mat-date-range-input [rangePicker]="picker" >
+        <input matStartDate placeholder="Start date"  [(ngModel)]="dateRangeStart">
+        <input matEndDate placeholder="End date"
+               (dateChange)="applyDateFilter(dateRangeStart, dateRangeEnd)" [(ngModel)]="dateRangeEnd">
+      </mat-date-range-input>
+      <mat-hint>MM/DD/YYYY – MM/DD/YYYY</mat-hint>
+      <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+      <mat-date-range-picker #picker></mat-date-range-picker>
+    </mat-form-field>
+    <button mat-button (click)="clearFilters()">Clear</button>
+  </div>
 </div>
-<div class="mat-elevation-z8">
+<div class="mat-elevation-z8 table-container">
   <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
     <!-- ID Column -->
     <ng-container matColumnDef="id">
@@ -64,8 +65,15 @@
 
     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
     <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    <tr class="mat-row" *matNoDataRow>
+      <td class="mat-cell no-match" [attr.colspan]="displayedColumns.length">
+        Sorry No data matching the filter.
+      </td>
+    </tr>
   </table>
-  <mat-progress-bar mode="indeterminate" *ngIf="isLoading"></mat-progress-bar>
+  @if (isLoading) {
+    <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+  }
   <mat-paginator
     [length]="metaData.totalNumberOfItems"
     [pageSizeOptions]="[metaData.pageSize]"

@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import {PaymentsComponent} from "./payments/payments.component";
+import {PaymentsComponent} from "./pages/payments/payments.component";
 
 @Component({
   selector: 'app-root',
